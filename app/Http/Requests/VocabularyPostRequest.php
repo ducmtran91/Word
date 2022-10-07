@@ -33,6 +33,7 @@ class VocabularyPostRequest extends FormRequest
      */
     public function rules()
     {
+        var_dump(request()->isMethod('post'));
         return [
             'word' => 'required|unique:vocabularies|max:255',
             'pronounce' => 'required|unique:vocabularies|max:255',
