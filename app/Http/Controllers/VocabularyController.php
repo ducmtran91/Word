@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Vocabulary;
-use Illuminate\Http\Request;
 use App\Http\Requests\VocabularyPostRequest;
-use Illuminate\Support\Facades\Storage;
 
 class VocabularyController extends Controller
 {
@@ -32,7 +30,7 @@ class VocabularyController extends Controller
     {
         $request->validated();
 
-        $vocabulary = new Vocabulary;
+        $vocabulary = new Vocabulary();
         $vocabulary->word = $request->word;
         $vocabulary->pronounce = $request->pronounce;
         $vocabulary->image = $request->file('image')->store('words');
@@ -43,7 +41,7 @@ class VocabularyController extends Controller
         return response()->json([
             'success'   => true,
             'message'   => 'Record creation successful',
-            'data'      => ['image' => Storage::url($vocabulary->image)]
+            'data'      => $vocabulary
         ]);
     }
 
@@ -70,14 +68,14 @@ class VocabularyController extends Controller
         // Retrieve a portion of the validated input data...
         // $validated = $request->safe()->only(['name', 'email']);
         // $validated = $request->safe()->except(['name', 'email']);
-        var_dump($request->file('image'));
-        echo 11111;
-        if ($request->file('image')) {
-            $request->validated();
-        } else {
-            $request->safe()->except(['image']);
-        }
-        //return $vocabulary->update($request->all());
+        $request->validated();
+
+        $vocabulary->update($request->all());
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Record Update successful',
+            'data'      => $vocabulary
+        ]);
     }
 
     /**
@@ -89,5 +87,10 @@ class VocabularyController extends Controller
     public function destroy(Vocabulary $vocabulary)
     {
         $vocabulary->delete();
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Record Delete successful',
+            'data'      => $vocabulary
+        ]);
     }
 }

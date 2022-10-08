@@ -7,6 +7,7 @@ use App\Enums\TypeWord;
 use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Models\Vocabulary;
 
 class VocabularyPostRequest extends FormRequest
 {
@@ -33,15 +34,36 @@ class VocabularyPostRequest extends FormRequest
      */
     public function rules()
     {
-        var_dump(request()->isMethod('post'));
-        return [
-            'word' => 'required|unique:vocabularies|max:255',
-            'pronounce' => 'required|unique:vocabularies|max:255',
+        $rules = [
+            'word' => 'required|max:255|unique:vocabularies,word,'.$this->vocabulary->id,
+            'pronounce' => 'required|max:255|unique:vocabularies,pronounce,'.$this->vocabulary->id,
             'description' => 'required',
             'example' => 'required',
-            'image' => 'required|image|max:2048',
             'type' => ['required', new EnumValue(TypeWord::class)],
         ];
+        switch($this->method())
+        {
+            case 'GET':
+            case 'DELETE':
+            {
+                $rules = [];
+            }
+            case 'POST':
+            {
+                $rules['image'] = 'required|image|max:2048';
+            }
+            case 'PUT':
+            case 'PATCH':
+            {
+
+                if ($this->file('image')) {
+                    $rules['image'] = 'required|image|max:2048';
+                }
+            }
+            default:
+                break;
+        }
+        return $rules;
     }
 
     /**

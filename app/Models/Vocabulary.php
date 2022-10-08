@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Vocabulary extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'word',
+        'pronounce',
+        'example',
+        'description',
+        'type',
+        'image'
+    ];
 }
